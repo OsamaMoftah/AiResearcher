@@ -25,11 +25,67 @@ st.set_page_config(
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 :root { --p: #D94B2B; --bg: #FAF9F7; --bg2: #F3F1ED; --txt: #2C2B27; --hov: #EBE8E3; --brd: #E0DED9; }
 * { font-family: 'Space Grotesk', sans-serif !important; color: var(--txt); }
 .stApp { background: var(--bg) !important; }
-[data-testid="stSidebar"] { background: var(--bg2) !important; border-right: 1px solid var(--brd) !important; }
+[data-testid="stSidebar"] { background: var(--bg2) !important; border-right: 1px solid var(--brd) !important; width: 300px !important; }
 h1, h2, h3 { font-weight: 600 !important; letter-spacing: -0.02em; }
+
+/* Hide Streamlit debug controls and header clutter */
+[data-testid="stToolbar"] { display: none !important; }
+div[data-testid="stDecoration"] { display: none !important; }
+#MainMenu { visibility: hidden !important; }
+footer { visibility: hidden !important; }
+.stDeployButton { display: none !important; }
+/* Hide Streamlit's hamburger menu and settings - but keep sidebar toggle functional */
+/* Only hide debug buttons, not the sidebar toggle */
+[data-testid="stHeader"] [data-testid="stToolbarActions"] { display: none !important; }
+[data-testid="stHeader"] button:not([data-testid*="sidebar"]) { display: none !important; }
+/* Ensure custom header is visible and properly spaced */
+.stApp > header {
+    display: none !important;
+}
+/* Main content area should start from top */
+[data-testid="stAppViewContainer"] {
+    padding-top: 0 !important;
+}
+
+/* Fix sidebar toggle button - hide text, show simple icon */
+/* Hide any text content in sidebar toggle buttons */
+button[data-testid="baseButton-header"] span,
+button[kind="header"] span {
+    font-size: 0 !important;
+    visibility: hidden !important;
+}
+/* Use Unicode hamburger menu icon instead of text */
+button[data-testid="baseButton-header"]::before,
+button[kind="header"]::before {
+    content: '☰' !important;
+    font-size: 24px !important;
+    display: inline-block !important;
+    line-height: 1 !important;
+    visibility: visible !important;
+}
+/* Ensure sidebar width is consistent */
+[data-testid="stSidebar"] {
+    min-width: 300px !important;
+    max-width: 300px !important;
+}
+/* Hide sidebar toggle button text that appears as "keyboard_double_arrow_left" */
+.css-1d391kg,
+.css-1lcbmhc,
+.css-1outpf7 {
+    display: none !important;
+}
+/* Style sidebar buttons consistently */
+[data-testid="stSidebar"] button {
+    border-radius: 8px !important;
+    transition: all 0.2s !important;
+}
+[data-testid="stSidebar"] button:hover {
+    background: var(--hov) !important;
+}
 button[kind="primary"] { background: var(--p) !important; border-radius: 10px !important; border: none !important; padding: 0.6rem 1.2rem !important; font-weight: 500 !important; transition: all 0.2s; }
 button[kind="primary"]:hover { background: #B63D23 !important; transform: scale(1.02); }
 div[data-testid="stMetric"] { border-radius: 12px !important; background: white !important; padding: 1rem !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; transition: transform 0.2s; }
@@ -603,6 +659,67 @@ div[data-testid="stAlert"] { border-radius: 10px !important; border-left: 4px so
     background: #FAF9F7;
     transform: scale(1.05);
 }
+
+/* Pill-shaped tab styling - unified modern design */
+.stTabs [data-baseweb="tab"] {
+    border-radius: 10px !important;
+    padding: 0.5rem 1rem !important;
+    background-color: #FAF9F7 !important;
+    color: #2C2B27 !important;
+    margin-right: 0.5rem !important;
+    border: 1px solid #E0DED9 !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500 !important;
+    font-size: 0.95em !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    background-color: #EDEBE6 !important;
+    border-color: #D94B2B !important;
+    transform: translateY(-1px) !important;
+}
+
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    background-color: #D94B2B !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border-color: #D94B2B !important;
+}
+
+/* Tab list container - remove default underline and add spacing */
+.stTabs [role="tablist"] {
+    gap: 0.5rem !important;
+    padding: 0.5rem 0 !important;
+    border-bottom: none !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Remove default underline indicator */
+.stTabs [role="tablist"]::after {
+    display: none !important;
+}
+
+/* Ensure tab container has proper spacing */
+.stTabs > div {
+    padding: 0 !important;
+}
+
+/* Style tab panels for consistency */
+.stTabs [role="tabpanel"] {
+    padding-top: 1rem !important;
+}
+
+/* Lighten button focus shadows for better visual balance */
+button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.4) !important;
+    outline: none !important;
+}
+
+button[kind="primary"]:focus {
+    box-shadow: 0 0 0 0.2rem rgba(217, 75, 43, 0.4) !important;
+    outline: none !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -844,6 +961,15 @@ def strip_html_tags(text: str) -> str:
     return text.strip()
 
 
+def render_html_block(html_content: str) -> None:
+    """Render HTML content block using st.markdown with unsafe_allow_html=True
+    
+    Args:
+        html_content: HTML string to render
+    """
+    st.markdown(html_content, unsafe_allow_html=True)
+
+
 def create_styled_content_box(content: str, box_type: str = "info") -> str:
     """Create a styled content box with AiResearcher pastel design
     
@@ -880,9 +1006,26 @@ def create_styled_content_box(content: str, box_type: str = "info") -> str:
     
     scheme = color_schemes.get(box_type, color_schemes["info"])
     
-    # Clean HTML comments before escaping
-    content_cleaned = clean_html_comments(str(content))
-    content_escaped = html.escape(content_cleaned)
+    # Handle escaped HTML: unescape first to handle double-escaping, then clean comments
+    content_str = str(content)
+    # Check if content contains escaped HTML entities (double-escaping)
+    if '&lt;' in content_str or '&gt;' in content_str or '&amp;' in content_str:
+        # Unescape HTML entities first
+        content_str = html.unescape(content_str)
+    
+    # Clean HTML comments after unescaping
+    content_cleaned = clean_html_comments(content_str)
+    
+    # Don't escape again - we want HTML to render (using unsafe_allow_html=True)
+    # Only escape if content doesn't look like valid HTML structure
+    # Check if content looks like HTML (contains tags)
+    has_html_tags = bool(re.search(r'<[^>]+>', content_cleaned))
+    if has_html_tags:
+        # Content contains HTML tags - don't escape, let it render
+        content_final = content_cleaned
+    else:
+        # Plain text - escape for safety
+        content_final = html.escape(content_cleaned)
     
     return f"""
     <div style="
@@ -897,7 +1040,7 @@ def create_styled_content_box(content: str, box_type: str = "info") -> str:
         font-size: 1.05em;
         font-weight: 400;
     ">
-        {content_escaped}
+        {content_final}
     </div>
     """
 
@@ -1058,19 +1201,18 @@ def create_timeline_visualization(insights: List[Dict]) -> str:
     format_type = timeline_analysis.get('format', 'weeks')
     
     # Create timeline HTML
-    timeline_html = f"""
-    <div class="timeline-container" style="margin: 1.5rem 0;">
-    """
+    timeline_html = """<div class="timeline-container" style="display: flex; justify-content: space-between; align-items: center; margin: 1.5rem 0; padding: 1rem; background: #FAF9F7; border-radius: 12px; gap: 0.5rem;">"""
     
     for i, step in enumerate(shared_steps):
+        # Escape step text to prevent HTML injection and rendering issues
+        step_escaped = html.escape(str(step))
         timeline_html += f"""
-        <div class="timeline-week">
-            <div style="font-weight: 600; color: #D94B2B; margin-bottom: 0.5rem;">{step}</div>
+        <div class="timeline-week" style="flex: 1; padding: 0.8rem; margin: 0 0.5rem; background: white; border: 1px solid #E0DED9; border-radius: 8px; text-align: center; font-size: 0.9em;">
+            <div style="font-weight: 600; color: #D94B2B; margin-bottom: 0.5rem;">{step_escaped}</div>
             <div style="font-size: 0.85em; color: #5B574D;">Common step across all experiments</div>
-        </div>
-        """
+        </div>"""
         if i < len(shared_steps) - 1:
-            timeline_html += '<div style="align-self: center; color: #D94B2B; font-size: 1.5em;">→</div>'
+            timeline_html += '<div style="align-self: center; color: #D94B2B; font-size: 1.5em; flex-shrink: 0;">→</div>'
     
     timeline_html += "</div>"
     
@@ -1942,26 +2084,18 @@ with st.sidebar:
     )
     
     # Source selection (only show if multi-platform is enabled)
+    # Only showing working sources: arXiv, Papers with Code, Hugging Face
+    # PubMed, bioRxiv, SSRN, and CORE have been removed as they don't work reliably
     enabled_sources = set()
     if use_multi_platform:
         st.markdown("**Select Sources:**")
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.checkbox("arXiv", value=True):
-                enabled_sources.add('arxiv')
-            if st.checkbox("Papers with Code", value=True):
-                enabled_sources.add('pwc')
-            if st.checkbox("Hugging Face", value=True):
-                enabled_sources.add('hf')
-            if st.checkbox("PubMed", value=True):
-                enabled_sources.add('pubmed')
-        with col2:
-            if st.checkbox("bioRxiv", value=True):
-                enabled_sources.add('biorxiv')
-            if st.checkbox("SSRN", value=False):
-                enabled_sources.add('ssrn')
-            if st.checkbox("CORE", value=False):
-                enabled_sources.add('core')
+        st.markdown("*Only working sources are shown*")
+        if st.checkbox("arXiv", value=True):
+            enabled_sources.add('arxiv')
+        if st.checkbox("Papers with Code", value=True):
+            enabled_sources.add('pwc')
+        if st.checkbox("Hugging Face", value=True):
+            enabled_sources.add('hf')
         
         # Ensure at least one source is selected
         if not enabled_sources:
@@ -2188,26 +2322,42 @@ with tab3:
         # Shared Timeline Section (if applicable)
         timeline_analysis = analyze_shared_timeline(insights)
         if timeline_analysis.get('has_shared_timeline'):
-            st.markdown("### 📅 Shared Experiment Timeline")
-            st.markdown("*Common experimental steps across all insights*")
-            timeline_html = create_timeline_visualization(insights)
-            if timeline_html:
-                st.markdown(timeline_html, unsafe_allow_html=True)
-            st.markdown("<br>", unsafe_allow_html=True)
+            with st.container():
+                st.markdown("### 📅 Shared Experiment Timeline")
+                st.markdown("*Common experimental steps across all insights*")
+                timeline_html = create_timeline_visualization(insights)
+                if timeline_html:
+                    timeline_block = f"""
+                    <div style="margin: 1.5rem 0; max-width: 100%;">
+                        {timeline_html}
+                    </div>
+                    """
+                    render_html_block(timeline_block)
+                else:
+                    st.info("No shared timeline detected across insights.")
+                render_html_block("<br>")
             st.divider()
-            st.markdown("<br>", unsafe_allow_html=True)
+            render_html_block("<br>")
 
         # Conceptual Reasoning Flow - render once before insights
-        st.markdown("### 🧠 Conceptual Reasoning Flow")
-        st.markdown("*This flow represents the structured reasoning process applied to each research opportunity*")
-        # Create a generic reasoning flow visualization (use first insight as example, or create generic one)
         if insights:
-            # Use first insight to show the flow structure
-            reasoning_flow_html = create_reasoning_flow(insights[0])
-            st.markdown(reasoning_flow_html, unsafe_allow_html=True)
-            st.markdown("<br>", unsafe_allow_html=True)
+            with st.container():
+                st.markdown("### 🧠 Conceptual Reasoning Flow")
+                st.markdown("*This flow represents the structured reasoning process applied to each research opportunity*")
+                # Use first insight to show the flow structure
+                reasoning_flow_html = create_reasoning_flow(insights[0])
+                if reasoning_flow_html:
+                    reasoning_flow_block = f"""
+                    <div style="margin: 1.5rem 0; max-width: 100%;">
+                        {reasoning_flow_html}
+                    </div>
+                    """
+                    render_html_block(reasoning_flow_block)
+                else:
+                    st.info("Reasoning flow visualization not available.")
+                render_html_block("<br>")
             st.divider()
-            st.markdown("<br>", unsafe_allow_html=True)
+            render_html_block("<br>")
 
         for i, insight in enumerate(insights, 1):
             # Calculate overall score
@@ -2227,33 +2377,6 @@ with tab3:
 
             # Enhanced card with clear hierarchy
             with st.container():
-                # Card container with AiResearcher styling
-                st.markdown(f"""
-                <div class="insight-card" style="margin-bottom: 2rem;">
-                    <!-- Title and Summary Section -->
-                    <div style="margin-bottom: 1rem;">
-                        <h2 style="font-size: 1.5em; font-weight: 600; color: #2C2B27; margin-bottom: 0.5rem; line-height: 1.3;">
-                            {i}. {html.escape(full_title)}
-                        </h2>
-                        <p style="font-size: 1.05em; color: #5B574D; font-style: italic; margin: 0; line-height: 1.7; font-weight: 400;">
-                            {html.escape(summary)}
-                        </p>
-                        </div>
-                    
-                    <!-- Mini-Stats Badges and Validation Badge -->
-                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #E0DED9;">
-                        <span class="mini-stat-badge" style="background: #FAF9F7; color: #2C2B27; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85em; font-weight: 500; border: 1px solid #E0DED9;">
-                            🧠 Novelty {novelty_score:.1f}
-                        </span>
-                        <span class="mini-stat-badge" style="background: #FAF9F7; color: #2C2B27; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85em; font-weight: 500; border: 1px solid #E0DED9;">
-                            ⚙️ Feasibility {feasibility_score:.1f}
-                        </span>
-                        <span class="mini-stat-badge" style="background: #FAF9F7; color: #2C2B27; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85em; font-weight: 500; border: 1px solid #E0DED9;">
-                            💥 Impact {impact_score:.1f}
-                        </span>
-                        <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
-                """, unsafe_allow_html=True)
-                
                 # Validation badge and overall score - using pastel colors
                 validator_style = AGENT_STYLES.get("Validator", {"color": "#B8A9D9", "bg": "#F7F5FA"})
                 if is_validated:
@@ -2267,7 +2390,28 @@ with tab3:
                     validation_text = "#2C2B27"
                     validation_status_text = "⚠️ UNVALIDATED"
                 
-                st.markdown(f"""
+                # Card container with AiResearcher styling - open card div (will be closed at end)
+                card_header_html = f"""
+                <div class="insight-card" style="margin-bottom: 2rem; max-width: 100%; padding: 1.5rem; background: white; border: 2px solid #E0DED9; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                    <div style="margin-bottom: 1rem;">
+                        <h2 style="font-size: 1.5em; font-weight: 600; color: #2C2B27; margin-bottom: 0.5rem; line-height: 1.3;">
+                            {i}. {html.escape(full_title)}
+                        </h2>
+                        <p style="font-size: 1.05em; color: #5B574D; font-style: italic; margin: 0; line-height: 1.7; font-weight: 400;">
+                            {html.escape(summary)}
+                        </p>
+                    </div>
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #E0DED9;">
+                        <span class="mini-stat-badge" style="background: #FAF9F7; color: #2C2B27; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85em; font-weight: 500; border: 1px solid #E0DED9;">
+                            🧠 Novelty {novelty_score:.1f}
+                        </span>
+                        <span class="mini-stat-badge" style="background: #FAF9F7; color: #2C2B27; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85em; font-weight: 500; border: 1px solid #E0DED9;">
+                            ⚙️ Feasibility {feasibility_score:.1f}
+                        </span>
+                        <span class="mini-stat-badge" style="background: #FAF9F7; color: #2C2B27; padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.85em; font-weight: 500; border: 1px solid #E0DED9;">
+                            💥 Impact {impact_score:.1f}
+                        </span>
+                        <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
                             <span style="display: inline-block;
                                         background: {validation_bg};
                                         color: {validation_text};
@@ -2290,31 +2434,34 @@ with tab3:
                             </span>
                         </div>
                     </div>
-                    """, unsafe_allow_html=True)
-
-                st.divider()
+                """
+                render_html_block(card_header_html)
                 
-                # Layer 1: Observation
+                # Layer 1: Observation (content is inside the insight-card div)
                 observation = insight.get('observation', '')
                 if observation:
                     st.markdown("#### 1️⃣ Observation")
                     st.markdown(f"*What patterns do we see across papers?*")
-                    # HTML comments are cleaned inside create_styled_content_box
-                    st.markdown(create_styled_content_box(observation, "observation"), unsafe_allow_html=True)
+                    # Unescape HTML before rendering to fix escaped HTML display
+                    observation_unescaped = html.unescape(str(observation)) if observation else ''
+                    st.markdown(create_styled_content_box(observation_unescaped, "observation"), unsafe_allow_html=True)
                 else:
                     # Fallback to gap if observation not available (backward compatibility)
                     st.markdown("#### 1️⃣ Observation (The Gap)")
                     st.markdown(f"*What patterns do we see across papers?*")
-                    # HTML comments are cleaned inside create_styled_content_box
-                    st.markdown(create_styled_content_box(insight.get('gap', 'N/A'), "observation"), unsafe_allow_html=True)
+                    # Unescape HTML before rendering
+                    gap_text = insight.get('gap', 'N/A')
+                    gap_unescaped = html.unescape(str(gap_text)) if gap_text else 'N/A'
+                    st.markdown(create_styled_content_box(gap_unescaped, "observation"), unsafe_allow_html=True)
 
                 # Layer 2: Hypothesis
                 hypothesis = insight.get('hypothesis', '')
                 if hypothesis:
                     st.markdown("#### 2️⃣ Hypothesis")
                     st.markdown(f"*What testable claim can we make?*")
-                    # HTML comments are cleaned inside create_styled_content_box
-                    st.markdown(create_styled_content_box(hypothesis, "success"), unsafe_allow_html=True)
+                    # Unescape HTML before rendering to fix escaped HTML display
+                    hypothesis_unescaped = html.unescape(str(hypothesis)) if hypothesis else ''
+                    st.markdown(create_styled_content_box(hypothesis_unescaped, "success"), unsafe_allow_html=True)
 
                 # Layer 3: Experiment Design
                 exp = insight.get('experiment_design', {})
@@ -2326,20 +2473,22 @@ with tab3:
                     if exp.get('objective') or exp.get('independent_variable') or exp.get('dependent_variables'):
                         # Scientific methodology format
                         if exp.get('objective'):
-                            # Strip HTML tags from objective text
-                            objective_text = strip_html_tags(exp.get('objective', ''))
+                            # Unescape HTML before displaying
+                            objective_text = html.unescape(str(exp.get('objective', '')))
+                            # Strip HTML tags to show as plain text
+                            objective_text = strip_html_tags(objective_text)
                             st.markdown(f"**Objective:** {objective_text}")
                         
                         col1, col2 = st.columns(2)
                         with col1:
                             if exp.get('independent_variable'):
-                                # Strip HTML tags before creating content box
-                                independent_var_text = strip_html_tags(exp.get('independent_variable', ''))
+                                # Unescape HTML before creating content box
+                                independent_var_text = html.unescape(str(exp.get('independent_variable', '')))
                                 st.markdown(f"**Independent Variable:**")
                                 st.markdown(create_styled_content_box(independent_var_text, "info"), unsafe_allow_html=True)
                             if exp.get('control_group'):
-                                # Strip HTML tags before creating content box
-                                control_group_text = strip_html_tags(exp.get('control_group', ''))
+                                # Unescape HTML before creating content box
+                                control_group_text = html.unescape(str(exp.get('control_group', '')))
                                 st.markdown(f"**Control Group:**")
                                 st.markdown(create_styled_content_box(control_group_text, "info"), unsafe_allow_html=True)
                         
@@ -2347,13 +2496,13 @@ with tab3:
                             if exp.get('dependent_variables'):
                                 deps = exp.get('dependent_variables', [])
                                 if isinstance(deps, list):
-                                    # Strip HTML tags from each dependent variable
-                                    deps_cleaned = [strip_html_tags(str(dep)) for dep in deps]
+                                    # Unescape HTML from each dependent variable
+                                    deps_cleaned = [html.unescape(str(dep)) for dep in deps]
                                     st.markdown(f"**Dependent Variables:**")
                                     st.markdown(create_styled_content_box(', '.join(deps_cleaned) if deps_cleaned else 'N/A', "info"), unsafe_allow_html=True)
                                 else:
-                                    # Strip HTML tags from dependent variables string
-                                    deps_text = strip_html_tags(str(deps))
+                                    # Unescape HTML from dependent variables string
+                                    deps_text = html.unescape(str(deps))
                                     st.markdown(f"**Dependent Variables:**")
                                     st.markdown(create_styled_content_box(deps_text, "info"), unsafe_allow_html=True)
                         
@@ -2363,22 +2512,24 @@ with tab3:
                             if isinstance(proc, dict) and proc:
                                 st.markdown(f"**Experimental Procedure:**")
                                 for phase, desc in proc.items():
-                                    # Strip HTML tags from phase description
+                                    # Unescape HTML from phase description
                                     phase_num = phase.replace('phase', '').upper() if 'phase' in phase.lower() else phase.upper()
-                                    desc_cleaned = strip_html_tags(str(desc))
+                                    desc_cleaned = html.unescape(str(desc))
+                                    # Strip HTML tags to show as plain text
+                                    desc_cleaned = strip_html_tags(desc_cleaned)
                                     st.markdown(f"- **{phase_num}:** {desc_cleaned}")
                         
                         # Expected Outcome
                         if exp.get('expected_outcome'):
-                            # Strip HTML tags before creating content box
-                            expected_outcome_text = strip_html_tags(exp.get('expected_outcome', ''))
+                            # Unescape HTML before creating content box
+                            expected_outcome_text = html.unescape(str(exp.get('expected_outcome', '')))
                             st.markdown(f"**Expected Outcome:**")
                             st.markdown(create_styled_content_box(expected_outcome_text, "success"), unsafe_allow_html=True)
                         
                         # Fallback Plan
                         if exp.get('fallback_plan'):
-                            # Strip HTML tags before creating content box
-                            fallback_plan_text = strip_html_tags(exp.get('fallback_plan', ''))
+                            # Unescape HTML before creating content box
+                            fallback_plan_text = html.unescape(str(exp.get('fallback_plan', '')))
                             st.markdown(f"**Fallback Plan:**")
                             st.markdown(create_styled_content_box(fallback_plan_text, "warning"), unsafe_allow_html=True)
                         
@@ -2388,12 +2539,16 @@ with tab3:
                             if isinstance(dels, list) and dels:
                                 st.markdown(f"**Deliverables:**")
                                 for deliverable in dels:
-                                    # Strip HTML tags from each deliverable
-                                    deliverable_cleaned = strip_html_tags(str(deliverable))
+                                    # Unescape HTML from each deliverable
+                                    deliverable_cleaned = html.unescape(str(deliverable))
+                                    # Strip HTML tags to show as plain text
+                                    deliverable_cleaned = strip_html_tags(deliverable_cleaned)
                                     st.markdown(f"- {deliverable_cleaned}")
                             elif dels:
-                                # Strip HTML tags from deliverables string
-                                dels_text = strip_html_tags(str(dels))
+                                # Unescape HTML from deliverables string
+                                dels_text = html.unescape(str(dels))
+                                # Strip HTML tags to show as plain text
+                                dels_text = strip_html_tags(dels_text)
                                 st.markdown(f"**Deliverables:** {dels_text}")
                         
                         # Show experiment design quality score if available
@@ -2405,10 +2560,13 @@ with tab3:
                     
                     # Legacy format (week1/week2/week3) - show if scientific format not available or as additional info
                     if exp.get('week1') or exp.get('week2') or exp.get('week3'):
-                        # Strip any HTML tags from week text to prevent raw HTML from showing
-                        week1_text = strip_html_tags(exp.get('week1', 'N/A')) if exp.get('week1') else 'N/A'
-                        week2_text = strip_html_tags(exp.get('week2', 'N/A')) if exp.get('week2') else 'N/A'
-                        week3_text = strip_html_tags(exp.get('week3', 'N/A')) if exp.get('week3') else 'N/A'
+                        # Unescape HTML and strip tags from week text
+                        week1_text = html.unescape(str(exp.get('week1', 'N/A'))) if exp.get('week1') else 'N/A'
+                        week1_text = strip_html_tags(week1_text)
+                        week2_text = html.unescape(str(exp.get('week2', 'N/A'))) if exp.get('week2') else 'N/A'
+                        week2_text = strip_html_tags(week2_text)
+                        week3_text = html.unescape(str(exp.get('week3', 'N/A'))) if exp.get('week3') else 'N/A'
+                        week3_text = strip_html_tags(week3_text)
                         
                         if not exp.get('objective') and not exp.get('independent_variable'):
                             # Only show legacy format if scientific format not available
@@ -2457,13 +2615,11 @@ with tab3:
                         for work in insight['related_work'][:3]:
                             st.markdown(f"- {work}")
 
-                st.divider()
-
                 # Additional details (backward compatibility)
                 if not observation and not hypothesis:
                     # Show gap and challenge if 5-layer structure not available
                     st.markdown("#### 🎯 The Gap (What's Missing)")
-                    st.write(insight.get('gap', 'N/A'))
+                    st.markdown(create_styled_content_box(insight.get('gap', 'N/A'), "observation"), unsafe_allow_html=True)
 
                     # Skeptic's Challenge
                     st.markdown("#### ⚠️ Skeptic's Challenge")
@@ -2473,17 +2629,22 @@ with tab3:
                 st.markdown("#### 💰 Why This Matters")
                 st.markdown(create_styled_content_box(insight.get('impact', 'N/A'), "success"), unsafe_allow_html=True)
 
+                # Close insight-card div
+                render_html_block("</div>")
+                
+                st.divider()
+
                 # Separator between insights
                 if i < len(insights):
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    st.divider()
-                    st.markdown("<br>", unsafe_allow_html=True)
+                    render_html_block("<br>")
+                    # Divider already rendered above
+                    render_html_block("<br>")
         
         # Collective Insight Summary
         if insights:
-            st.markdown("<br>", unsafe_allow_html=True)
+            render_html_block("<br>")
             st.divider()
-            st.markdown("<br>", unsafe_allow_html=True)
+            render_html_block("<br>")
             
             collective_summary = generate_collective_summary(
                 insights, 
@@ -2492,7 +2653,7 @@ with tab3:
             
             if collective_summary:
                 st.markdown("### 🎯 Collective Insight Summary")
-                st.markdown(f"""
+                collective_summary_html = f"""
                 <div style="
                     background: #FAF9F7;
                     border: 2px solid #E0DED9;
@@ -2506,7 +2667,8 @@ with tab3:
                         {html.escape(collective_summary)}
                     </p>
                 </div>
-                """, unsafe_allow_html=True)
+                """
+                render_html_block(collective_summary_html)
     else:
         st.info("No insights generated yet. Run the analysis first.")
 
@@ -2534,8 +2696,13 @@ with tab4:
             dialogue_message = entry.get('dialogue_message', '')
             style = agent_styles.get(agent_name, {"color": "#6B7280", "bg": "#F3F4F6", "icon": "🤖"})
             
-            # Conversation bubble
+            # Conversation bubble - wrap in container with consistent spacing
             with st.container():
+                # Add consistent margin and padding for container
+                st.markdown("""
+                <div style="margin-bottom: 2rem; padding: 1rem; max-width: 100%;">
+                """, unsafe_allow_html=True)
+                
                 # Turn indicator and responding to
                 turn_info = f"**Turn {turn}**"
                 if responding_to:
@@ -2593,7 +2760,8 @@ with tab4:
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # Dialogue message (main content - details) - properly escaped
+                    # Dialogue message (main content - details) - properly escaped with fallback
+                    dialogue_message = dialogue_message if dialogue_message else entry.get('output_summary', 'No dialogue message available.')
                     if dialogue_message:
                         dialogue_escaped = html.escape(str(dialogue_message))
                         st.markdown(f"""
@@ -2602,21 +2770,71 @@ with tab4:
                             border-left: 4px solid {style['color']};
                             padding: 1rem;
                             border-radius: 8px;
-                            margin-bottom: 0.5rem;
+                            margin-bottom: 1rem;
                             font-size: 1.05em;
                             line-height: 1.6;
                             color: #2C2B27;
+                            max-width: 100%;
                         ">
                             {dialogue_escaped}
                         </div>
                         """, unsafe_allow_html=True)
+                    else:
+                        # Fallback placeholder
+                        st.markdown(f"""
+                        <div style="
+                            background: {style['bg']};
+                            border-left: 4px solid {style['color']};
+                            padding: 1rem;
+                            border-radius: 8px;
+                            margin-bottom: 1rem;
+                            font-size: 1.05em;
+                            line-height: 1.6;
+                            color: #5B574D;
+                            font-style: italic;
+                            max-width: 100%;
+                        ">
+                            Analysis completed. No additional dialogue message available.
+                        </div>
+                        """, unsafe_allow_html=True)
                     
                     # Additional details (thinking, findings, etc.) - styled box instead of expander
-                    if entry.get('thinking'):
+                    thinking = entry.get('thinking', [])
+                    if thinking and len(thinking) > 0:
                         thoughts_html = ""
-                        for thought in entry['thinking']:
+                        for thought in thinking:
                             thought_escaped = html.escape(str(thought))
                             thoughts_html += f"<li style='margin: 0.5rem 0; color: #5B574D;'>{thought_escaped}</li>"
+                        
+                        if thoughts_html:
+                            st.markdown(f"""
+                            <div style="
+                                background: {style['bg']};
+                                border: 1px solid {style['color']};
+                                border-left: 3px solid {style['color']};
+                                border-radius: 8px;
+                                padding: 1rem;
+                                margin: 1rem 0;
+                                max-width: 100%;
+                            ">
+                                <div style="font-weight: 600; color: {style['color']}; margin-bottom: 0.8rem; font-size: 0.95em;">
+                                    💭 Detailed Reasoning
+                                </div>
+                                <ul style="margin: 0; padding-left: 1.5rem; color: #2C2B27;">
+                                    {thoughts_html}
+                                </ul>
+                            </div>
+                            """, unsafe_allow_html=True)
+                    
+                    # Show specific agent outputs - styled boxes instead of st.info/st.success
+                    if agent_name == "Skeptic":
+                        # Always show field_insights box (even if empty, with fallback)
+                        field_insights = entry.get('field_insights', '')
+                        if field_insights:
+                            field_insights_text = str(field_insights)
+                            field_insights_escaped = html.escape(field_insights_text[:500] + ('...' if len(field_insights_text) > 500 else ''))
+                        else:
+                            field_insights_escaped = "Field analysis completed. No specific insights available at this time."
                         
                         st.markdown(f"""
                         <div style="
@@ -2626,44 +2844,28 @@ with tab4:
                             border-radius: 8px;
                             padding: 1rem;
                             margin: 1rem 0;
+                            max-width: 100%;
                         ">
-                            <div style="font-weight: 600; color: {style['color']}; margin-bottom: 0.8rem; font-size: 0.95em;">
-                                💭 Detailed Reasoning
+                            <div style="font-weight: 600; color: {style['color']}; margin-bottom: 0.5rem; font-size: 0.95em;">
+                                📊 Field Insights
                             </div>
-                            <ul style="margin: 0; padding-left: 1.5rem; color: #2C2B27;">
-                                {thoughts_html}
-                            </ul>
+                            <div style="color: #2C2B27; line-height: 1.6; font-size: 0.95em;">
+                                {field_insights_escaped}
+                            </div>
                         </div>
                         """, unsafe_allow_html=True)
-                    
-                    # Show specific agent outputs - styled boxes instead of st.info/st.success
-                    if agent_name == "Skeptic":
-                        if entry.get('field_insights'):
-                            field_insights_text = str(entry['field_insights'])
-                            field_insights_escaped = html.escape(field_insights_text[:300] + ('...' if len(field_insights_text) > 300 else ''))
-                            st.markdown(f"""
-                            <div style="
-                                background: {style['bg']};
-                                border: 1px solid {style['color']};
-                                border-left: 3px solid {style['color']};
-                                border-radius: 8px;
-                                padding: 1rem;
-                                margin: 1rem 0;
-                            ">
-                                <div style="font-weight: 600; color: {style['color']}; margin-bottom: 0.5rem; font-size: 0.95em;">
-                                    Field Insights
-                                </div>
-                                <div style="color: #2C2B27; line-height: 1.6; font-size: 0.95em;">
-                                    {field_insights_escaped}
-                                </div>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        if entry.get('potential_contradictions'):
+                        
+                        # Show potential contradictions if available
+                        potential_contradictions = entry.get('potential_contradictions', [])
+                        if potential_contradictions and len(potential_contradictions) > 0:
                             contradictions_html = ""
-                            for pc in entry['potential_contradictions'][:2]:
-                                desc = str(pc.get('description', ''))[:150]
+                            for pc in potential_contradictions[:2]:
+                                if isinstance(pc, dict):
+                                    desc = str(pc.get('description', ''))[:150]
+                                else:
+                                    desc = str(pc)[:150]
                                 if desc:
-                                    desc_escaped = html.escape(desc) + '...'
+                                    desc_escaped = html.escape(desc) + ('...' if len(desc) >= 150 else '')
                                     contradictions_html += f"<li style='margin: 0.5rem 0; color: #5B574D;'>{desc_escaped}</li>"
                             
                             if contradictions_html:
@@ -2675,6 +2877,7 @@ with tab4:
                                     border-radius: 8px;
                                     padding: 1rem;
                                     margin: 1rem 0;
+                                    max-width: 100%;
                                 ">
                                     <div style="font-weight: 600; color: {style['color']}; margin-bottom: 0.5rem; font-size: 0.95em;">
                                         🔍 Potential Contradictions
@@ -2682,6 +2885,29 @@ with tab4:
                                     <ul style="margin: 0; padding-left: 1.5rem; color: #2C2B27;">
                                         {contradictions_html}
                                     </ul>
+                                </div>
+                                """, unsafe_allow_html=True)
+                        else:
+                            # Show interpretation if no contradictions but interpretation available
+                            interpretation = entry.get('interpretation', '')
+                            if interpretation:
+                                interpretation_escaped = html.escape(str(interpretation))
+                                st.markdown(f"""
+                                <div style="
+                                    background: {style['bg']};
+                                    border: 1px solid {style['color']};
+                                    border-left: 3px solid {style['color']};
+                                    border-radius: 8px;
+                                    padding: 1rem;
+                                    margin: 1rem 0;
+                                    max-width: 100%;
+                                ">
+                                    <div style="font-weight: 600; color: {style['color']}; margin-bottom: 0.5rem; font-size: 0.95em;">
+                                        💡 Interpretation
+                                    </div>
+                                    <div style="color: #2C2B27; line-height: 1.6; font-size: 0.95em;">
+                                        {interpretation_escaped}
+                                    </div>
                                 </div>
                                 """, unsafe_allow_html=True)
                     
@@ -2733,6 +2959,9 @@ with tab4:
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
+                
+                # Close container div
+                st.markdown("</div>", unsafe_allow_html=True)
                 
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.divider()
@@ -2975,35 +3204,37 @@ with tab5:
 
         # Preview - styled HTML box instead of expander
         st.subheader("📄 Report Preview")
-        # Render markdown report in a styled container
-        # Use st.markdown with custom CSS class for styling
-        st.markdown(f"""
-        <div style="
-            background: #FAF9F7;
-            border: 2px solid #E0DED9;
-            border-left: 3px solid #9FC5A8;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            max-height: 700px;
-            overflow-y: auto;
-        ">
-        <div style="
-            font-family: 'Space Grotesk', sans-serif;
-            line-height: 1.7;
-            color: #2C2B27;
-        ">
-        """, unsafe_allow_html=True)
-        
-        # Render the markdown report - Streamlit will render it as markdown
-        st.markdown(markdown_report)
-        
-        # Close the styled container
-        st.markdown("""
-        </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Render markdown report in a styled container - no empty placeholders
+        if markdown_report and markdown_report.strip():
+            st.markdown(f"""
+            <div style="
+                background: #FAF9F7;
+                border: 2px solid #E0DED9;
+                border-left: 3px solid #9FC5A8;
+                border-radius: 12px;
+                padding: 1.5rem;
+                margin: 1.5rem 0;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                max-height: 700px;
+                overflow-y: auto;
+            ">
+            <div style="
+                font-family: 'Space Grotesk', sans-serif;
+                line-height: 1.7;
+                color: #2C2B27;
+            ">
+            """, unsafe_allow_html=True)
+            
+            # Render the markdown report - Streamlit will render it as markdown
+            st.markdown(markdown_report)
+            
+            # Close the styled container
+            st.markdown("""
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info("Report content is being generated...")
     else:
         st.info("No data to export. Run the analysis first.")
 
@@ -3136,11 +3367,13 @@ with tab6:
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Placeholder buttons
+    # Functional buttons with placeholder logic
     col1, col2 = st.columns(2)
     with col1:
-        st.button("🧠 Start Brainstorming Session", use_container_width=True, disabled=True)
+        if st.button("🧠 Start Brainstorming Session", use_container_width=True, type="primary"):
+            st.toast("🧠 Brainstorming session feature coming soon!", icon="💡")
     with col2:
-        st.button("📝 Export Ideas", use_container_width=True, disabled=True)
+        if st.button("📝 Export Ideas", use_container_width=True, type="primary"):
+            st.toast("📝 Export feature under development!", icon="🚀")
     
     st.markdown("</div>", unsafe_allow_html=True)

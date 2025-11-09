@@ -2,6 +2,12 @@
 
 A multi-agent research system that transforms academic papers into validated research insights with actionable experiment designs.
 
+## 🎥 Demo Video
+
+https://github.com/OsamaMoftah/AiResearcher/assets/AiResearcher.mp4
+
+*Watch the demo to see AiResearcher in action!*
+
 ## Overview
 
 AiResearcher analyzes research papers using a specialized agent pipeline to identify gaps, challenge assumptions, and generate validated research opportunities. The system searches across multiple academic platforms, performs deep analysis, and provides experiment designs with validation against prior work.

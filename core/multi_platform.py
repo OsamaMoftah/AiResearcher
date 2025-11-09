@@ -57,14 +57,16 @@ class SimpleMultiPlatformScraper:
         Initialize scraper with optional source selection
         
         Args:
-            enabled_sources: Set of source names to enable. If None, enables all sources.
-                            Options: 'arxiv', 'pwc', 'hf', 'pubmed', 'biorxiv', 'ssrn', 'core'
+            enabled_sources: Set of source names to enable. If None, enables working sources.
+                            Options: 'arxiv', 'pwc', 'hf' (working)
+                            Note: 'pubmed', 'biorxiv', 'ssrn', 'core' are available but not enabled by default
         """
         self.session = requests.Session()
         self.session.headers.update({'User-Agent': 'AiResearcher/1.0'})
         
-        # Default enabled sources
-        default_sources = {'arxiv', 'pwc', 'hf', 'pubmed', 'biorxiv', 'ssrn', 'core'}
+        # Default enabled sources - only working sources: arXiv, Papers with Code, Hugging Face
+        # PubMed, bioRxiv, SSRN, and CORE have been removed as they don't work reliably
+        default_sources = {'arxiv', 'pwc', 'hf'}
         self.enabled_sources = enabled_sources if enabled_sources is not None else default_sources
     
     def search_all(self, query: str, max_per_platform: int = 10, 
