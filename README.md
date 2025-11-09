@@ -4,9 +4,11 @@ A multi-agent research system that transforms academic papers into validated res
 
 ## 🎥 Demo Video
 
-<video src="https://github.com/OsamaMoftah/AiResearcher/raw/main/AiResearcher.mp4" controls width="100%"></video>
+[![AiResearcher Demo](https://img.shields.io/badge/▶️-Watch%20Demo%20Video-red?style=for-the-badge)](https://github.com/OsamaMoftah/AiResearcher/raw/main/AiResearcher.mp4)
 
-*Watch the demo to see AiResearcher in action!*
+*Click the button above to watch the demo video and see AiResearcher in action!*
+
+**Direct video link:** [AiResearcher.mp4](https://github.com/OsamaMoftah/AiResearcher/raw/main/AiResearcher.mp4)
 
 ## Overview
 
