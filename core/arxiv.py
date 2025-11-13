@@ -8,6 +8,7 @@ import requests
 import xml.etree.ElementTree as ET
 from typing import List, Dict
 from dataclasses import dataclass
+from datetime import datetime
 
 @dataclass
 class Paper:
@@ -61,7 +62,7 @@ def search_arxiv(query: str, max_results: int = 5) -> List[Paper]:
                           for a in entry.findall("{http://www.w3.org/2005/Atom}author")
                           if a.find("{http://www.w3.org/2005/Atom}name") is not None and a.find("{http://www.w3.org/2005/Atom}name").text]
                 published = published_elem.text if published_elem is not None else ""
-                year = int(published[:4]) if published and len(published) >= 4 else 2024
+                year = int(published[:4]) if published and len(published) >= 4 else datetime.now().year
                 
                 papers.append(Paper(
                     title=title,
